@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Welcome to Our Company{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'chatbot/styles.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Welcome to Our Company</h1>
+        <nav>
+            <ul>
+                <li><a href="/chatbot/signin">Sign In</a></li>
+                <li><a href="/chatbot">Chatbot</a></li>
+                <li><a href="/chatbot/attachments">Attachments</a></li>
+                <li><a href="/chatbot/about">About Us</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        {% block content %}
+        <!-- Child templates will override this block -->
+        {% endblock %}
+        
+        <aside id="ad-section">
+            <h2>Company Ads</h2>
+            <p>Check out our latest product here!</p>
+            <!-- More advertising content can go here -->
+        </aside>
+    </main>
+
+    <footer>
+        <p>© 2024 Company Name. All rights reserved.</p>
+    </footer>
+
+    {% load static %}
+    <script src="{% static 'chatbot/script.js' %}"></script>
+</body>
+</html>

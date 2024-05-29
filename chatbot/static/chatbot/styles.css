@@ -1,0 +1,226 @@
+/* styles.css */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+header, footer {
+    background-color: #333;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+}
+
+main {
+    flex: 1;
+    display: flex;
+    padding: 20px;
+    gap: 20px;
+}
+
+#chat-section {
+    flex-grow: 1;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+#chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 400px;
+}
+
+#chatbox {
+    flex-grow: 1;
+    overflow-y: auto;
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    padding: 10px;
+}
+
+#chatbox li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+#chatbox li.user {
+    justify-content: flex-start;
+}
+
+#chatbox li.user img {
+    margin-left: 10px;
+}
+
+#chatbox li.bot {
+    justify-content: flex-end;
+}
+
+#chatbox li.bot img {
+    margin-right: 10px;
+}
+
+#chatbox img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+#chatbox span {
+    max-width: 70%;
+    word-wrap: break-word;
+    padding: 8px;
+    display: inline-block;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+}
+
+input[type="text"], button {
+    padding: 10px;
+    margin-top: 10px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    cursor: pointer;
+    background-color: #5cb85c;
+    color: white;
+    border-color: #4cae4c;
+}
+
+button:hover {
+    background-color: #45a045;
+}
+
+aside {
+    width: 300px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    background: #f4f4f4;
+}
+
+aside h2 {
+    color: #333;
+}
+
+nav {
+    text-align: center;
+    margin-top: 10px;
+}
+
+nav ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0; /* Ensures there is no default margin */
+    display: flex; /* Makes the list items line up horizontally */
+    justify-content: center; /* Centers the items horizontally */
+}
+
+nav ul li {
+    margin: 0 10px; /* Adds space between items */
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 10px 20px; /* Increased padding for a larger box */
+    border-radius: 5px; /* Keeps the rounded corners */
+    background-color: #333; /* Default background color */
+    transition: background-color 0.3s, color 0.3s; /* Smooth transition for hover effect */
+    display: inline-block; /* Ensures the padding and box-sizing are respected */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Adds a subtle shadow for depth */
+}
+
+nav ul li a:hover, nav ul li a:focus {
+    background-color: #555; /* Lighter background on hover */
+    color: #fff; /* Maintains white color for text on hover */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3); /* Slightly deeper shadow on hover for a "lifting" effect */
+}
+
+#signin-section {
+    flex-grow: 1;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 8px;
+}
+#attachment-section {
+    flex-grow: 1;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+#signin-form input[type="text"],
+#signin-form button {
+    padding: 10px;
+    margin-top: 5px;
+    font-size: 16px; /* Adjust size as needed */
+}
+
+#signin-form button {
+    background-color: #333;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+#signin-form button:hover {
+    background-color: #555;
+}
+
+.custom-file-input:hover {
+    cursor: pointer;
+}
+
+.custom-file-label {
+    overflow: hidden;
+}
+
+.custom-file-label::after {
+    content: "Browse";
+}
+
+.input-group-append .btn {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.progress-container {
+    width: 100%;
+    background-color: #ddd;
+    padding: 3px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    margin-top: 20px;
+}
+
+.progress-bar {
+    height: 20px;
+    background-color: #4CAF50; /* Green background */
+    text-align: center;
+    line-height: 20px; /* Center the label vertically */
+    border-radius: 3px;
+    transition: width 0.4s ease-in-out;
+    color: white;
+    font-weight: bold;
+}
+
+.progress-label {
+    color: white;
+    font-size: 14px;
+}

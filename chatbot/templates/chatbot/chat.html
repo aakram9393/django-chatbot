@@ -1,0 +1,14 @@
+{% extends "chatbot/base.html" %}
+
+{% block title %}Chatbot{% endblock %}
+
+{% block content %}
+<section id="chat-section">
+    <h2>Chat with our bot</h2>
+    <div id="chat-container">
+        <ul id="chatbox"></ul>
+        <input type="text" id="userInput" placeholder="Say something..." autofocus>
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</section>
+{% endblock %}
