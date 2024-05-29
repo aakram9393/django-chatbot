@@ -1,8 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.http import JsonResponse
 import requests
 import base64
-import logging
+import httpx
+from asgiref.sync import sync_to_async
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login
 
 # Create your views here.
 
@@ -15,28 +18,32 @@ def retrieve_user_id(username):
     else:
         return response.status_code
 
-def post_question(message, chat_id):
+async def post_question(message, chat_id):
     url = f'https://kong.zenith-dev-gateway.com/core-be/api/rag/chats/{chat_id}/questions'
     payload = {
         'question': message
     }
-    response = requests.post(url, json=payload)
-    print("api-response",response)
-    if response.status_code == 201:
-        return response.json()
-    else:
-        return response.status_code
+    async with httpx.AsyncClient() as client:
+        response = requests.post(url, json=payload)
+        print("api-response",response)
+        if response.status_code == 201:
+            return response.json()
+        else:
+            return response.status_code
 
-def api_chat(request):
+async def api_chat(request):
     user_input = request.GET.get('message')
     if user_input:
-        answer = post_question(user_input, request.session["id"])
+        session_id = await sync_to_async(request.session.__getitem__)("id")
+        answer = await post_question(user_input, session_id)
         print("API ANSWER :::::::: ", answer)
     bot_response = answer["answer"]
     return JsonResponse({'message': str(bot_response)})
 
+# @login_required(login_url='signin/')
 def chat(request):
     return render(request, 'chatbot/chat.html')
+    
 
 def home(request):
     return render(request, 'chatbot/base.html')
@@ -58,12 +65,21 @@ def signin(request):
 
 def submit(request):
     username = request.GET.get('username')
+    password = request.GET.get('password', '') 
     request.session['username'] = username
     request.session["id"] = retrieve_user_id(request.session['username'])
-    print(request.session["id"])
+    user = authenticate(request, username=username, password=password)
     if username:
         request.session["attachment_status"] = "signedin"
-        return JsonResponse({'status': 'success', 'username': username})
+        request.session["loggedin"] = True
+    if user is not None:
+        print("test")
+        login(request, user)
+        next_url = request.GET.get('next', '/chatbot/')
+        return redirect(next_url)
+        # next_url = request.GET.get('next', '/chatbot/')
+        # return redirect(next_url)
+        # return JsonResponse({'status': 'success', 'username': username})
     else:
         return JsonResponse({'status': 'error', 'message': 'no username provided'})
     

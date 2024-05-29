@@ -3,9 +3,27 @@
 {% block title %}Chatbot{% endblock %}
 
 {% block content %}
-<div class="progress-container">
-    <div class="progress-bar" id="progress-bar" style="width: 0%;">
-        <span class="progress-label" id="progress-label">0%</span>
-    </div>
+<div class="container mt-5">
+    <h2>Upload Files</h2>
+    <form action="{% url 'file_upload' %}" method="post" enctype="multipart/form-data" class="pt-3">
+        {% csrf_token %}
+        <div class="input-group mb-3">
+            <div class="custom-file">
+                <input type="file" class="custom-file-input" id="customFile" name="files" multiple>
+                <label class="custom-file-label" for="customFile">Choose files</label>
+            </div>
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="submit">Upload</button>
+            </div>
+        </div>
+    </form>
 </div>
+
+<script>
+document.querySelector('.custom-file-input').addEventListener('change', function(e) {
+    let fileName = document.getElementById("customFile").files.length + " files selected";
+    let nextSibling = e.target.nextElementSibling;
+    nextesibling.innerText = fileName;
+});
+</script>
 {% endblock %}

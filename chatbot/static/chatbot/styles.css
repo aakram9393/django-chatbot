@@ -152,35 +152,51 @@ nav ul li a:hover, nav ul li a:focus {
 
 #signin-section {
     flex-grow: 1;
-    border: 1px solid #ccc;
-    padding: 10px;
-    border-radius: 8px;
-}
-#attachment-section {
-    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch; /* Ensures that children (form) stretch to full width */
     border: 1px solid #ccc;
     padding: 10px;
     border-radius: 8px;
 }
 
-#signin-form input[type="text"],
-#signin-form button {
-    padding: 10px;
-    margin-top: 5px;
-    font-size: 16px; /* Adjust size as needed */
+#signin-section h2 {
+    text-align: center;
+    font-size: 24px; /* Increase font size */
+    margin-bottom: 20px; /* Add some space below the header */
+}
+
+#signin-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Adds space between form elements */
+    align-items: center; /* Center align the form elements */
+}
+
+#signin-form input[type="text"], #signin-form button {
+    width: 30%; /* Set width of both input and button to 30% of their container */
+    height: 40px;
+    font-size: 16px; /* Larger font size for readability */
+    padding: 0 10px; /* Padding inside the input field */
+    margin: 0 auto; /* Center both horizontally */
+    border-radius: 5px; /* Rounded corners for aesthetics */
+}
+
+#signin-form input[type="text"] {
+    border: 1px solid #ccc; /* Style the border of the input */
 }
 
 #signin-form button {
-    background-color: #333;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
-    transition: background-color 0.3s;
+    background-color: #333; /* A dark gray background for the button */
+    color: white; /* White text color */
+    border: none; /* No border for the button */
+    cursor: pointer; /* Cursor changes to pointer when hovering over the button */
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
 }
 
 #signin-form button:hover {
-    background-color: #555;
+    background-color: #555; /* Darker gray on hover */
 }
 
 .custom-file-input:hover {
