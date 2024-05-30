@@ -3,6 +3,7 @@
 {% block title %}Chatbot{% endblock %}
 
 {% block content %}
+{% csrf_token %}
 <section id="chat-section">
     <h2>Chat with our bot</h2>
     <div id="chat-container">

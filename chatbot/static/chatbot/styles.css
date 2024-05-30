@@ -240,3 +240,60 @@ nav ul li a:hover, nav ul li a:focus {
     color: white;
     font-size: 14px;
 }
+
+/* Basic reset for the specific section to ensure consistent styling */
+    
+#login-section {
+    flex-grow: 1;
+    flex-direction: column;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* This will make the section take the full height of the viewport */
+    background-color: #f4f4f9; /* Light grey background */
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+#login-section form {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch; /* Ensures child elements (inputs/buttons) are stretched to fit */
+    border: 1px solid #ccc;
+    padding: 20px;
+    box-shadow: 0 0 10px #ccc;
+    background: white;
+    border-radius: 8px;
+    width: 300px; /* Set a fixed width for the form */
+}
+
+#login-section input, 
+#login-section button {
+    width: calc(100% - 10px); /* Adjust width to allow for padding */
+    padding: 8px;
+    margin-top: 6px;
+    margin-bottom: 6px;
+    border-radius: 5px;
+}
+
+#login-section button {
+    background-color: #4CAF50; /* Green background */
+    color: white;
+    border: none;
+}
+
+#login-section button:hover {
+    opacity: 0.8;
+}
+
+.header-content {
+    display: flex; /* Enables Flexbox */
+    align-items: center; /* Vertically centers the content in the container */
+    justify-content: space-between; /* Spaces out the child elements */
+    width: 100%; /* Ensures the flex container fills the header */
+}
+
+.logout-form {
+    margin: 0; /* Removes margin for the form if any */
+}

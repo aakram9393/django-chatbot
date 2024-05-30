@@ -2,7 +2,11 @@
 
 {% block title %}Chatbot{% endblock %}
 
+{% block ads %}
+{% endblock ads %}
+
 {% block content %}
+<section id="signin-section">
 <div class="container mt-5">
     <h2>Upload Files</h2>
     <form action="{% url 'file_upload' %}" method="post" enctype="multipart/form-data" class="pt-3">
@@ -18,6 +22,7 @@
         </div>
     </form>
 </div>
+</section>
 
 <script>
 document.querySelector('.custom-file-input').addEventListener('change', function(e) {

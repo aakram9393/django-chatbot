@@ -3,21 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Welcome to Our Company{% endblock %}</title>
+    <title>{% block title %}Welcome to Zenith RAG Chatbot{% endblock %}</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'chatbot/styles.css' %}">
 </head>
 <body>
     <header>
-        <h1>Welcome to Our Company</h1>
+        <div class="header-content">
+            <h1>Welcome to Zenith RAG Chatbot</h1>
+            {% block logout %}
+            <form action="{% url 'logout' %}" method="post" class="logout-form">
+                {% csrf_token %}
+                <button type="submit" class="logout-button">Logout</button>
+            </form>
+            {% endblock logout %}
+        </div>
+        {% block nav %}
         <nav>
             <ul>
-                <li><a href="/chatbot/signin">Sign In</a></li>
-                <li><a href="/chatbot">Chatbot</a></li>
+                <li><a href="/chatbot/signin">Profile</a></li>
+                <li><a href="/chatbot/conversation">Chatbot</a></li>
                 <li><a href="/chatbot/attachments">Attachments</a></li>
                 <li><a href="/chatbot/about">About Us</a></li>
             </ul>
         </nav>
+        {% endblock nav %}
     </header>
 
     <main>
@@ -25,11 +35,13 @@
         <!-- Child templates will override this block -->
         {% endblock %}
         
+        {% block ads %}
         <aside id="ad-section">
             <h2>Company Ads</h2>
             <p>Check out our latest product here!</p>
             <!-- More advertising content can go here -->
         </aside>
+        {% endblock ads %}
     </main>
 
     <footer>

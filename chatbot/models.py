@@ -7,3 +7,7 @@ class Message(models.Model):
 
     def __str__(self) -> str:
         return self.text[:50]
+
+class AttachmentStatus(models.Model):
+    user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
+    status = models.CharField(max_length=20)    

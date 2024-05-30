@@ -1,0 +1,24 @@
+{% extends "chatbot/base.html" %}
+
+{% block title %}Chatbot Login{% endblock %}
+
+{% block logout %}
+{% endblock logout %}
+
+{% block nav %}
+{% endblock nav %}
+
+{% block ads %}
+{% endblock ads %}
+
+{% block content %}
+<section id="login-section">
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Login</button>
+        <!-- Add a button or link for registration -->
+        <a href="{% url 'signup' %}" class="btn">Register</a>
+    </form>
+</section>
+{% endblock %}
