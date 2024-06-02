@@ -194,11 +194,11 @@ def file_upload(request):
                 return JsonResponse({'status': 'error', 'message': f'Failed to process file {f.name}.'})
 
         # Construct the request body
-        payload = {'attachments': attachments}
+        payload = attachments
         print("payload", payload)
 
         # API endpoint URL
-        url = f'https://kong.zenith-dev-gateway.com/core-be/api/rag/chats/{request.session.get("id")}/questions'
+        url = f'https://kong.zenith-dev-gateway.com/core-be/api/rag/chats/{request.session.get("id")}/attachments'
         
         if request.session.get("attachment_status") != "processing":
             try:
