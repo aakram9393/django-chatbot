@@ -9,7 +9,7 @@ on:
 
 jobs:
   update-and-deploy:
-    runs-on: build-x64
+    runs-on: organization-build
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Checkout Helm chart repository
