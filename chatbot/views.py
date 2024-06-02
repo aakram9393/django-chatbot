@@ -92,7 +92,8 @@ def chat(request):
         return render(request, 'chatbot/processing.html')
     
 
-def home():
+def home(request):
+    render(request, 'chatbot/signin.html')
     return redirect('login_view')
 
 @csrf_exempt
