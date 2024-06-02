@@ -8,7 +8,7 @@ on:
 
 env:
   ECR_REPOSITORY: "core"
-  IMAGE_TAG: barriermodel-${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}-v${{ github.run_number }}
+  IMAGE_TAG: chatbot-django-${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}-v${{ github.run_number }}
 
 jobs:
   build-and-push:
