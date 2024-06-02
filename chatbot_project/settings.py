@@ -27,6 +27,7 @@ SECRET_KEY = 'django-insecure-+)@0c8yd@*dqa+9xj8d3w09%-z0_uk0!skr^=tiet(s56u_@z_
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+CSRF_TRUSTED_ORIGINS = ['https://kong.zenith-dev-gateway.com']
 
 
 # Application definition
