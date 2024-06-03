@@ -13,5 +13,7 @@ urlpatterns = [
     path('submit/', views.submit, name='submit'),
     path('attachments/', views.attachments, name='attachments'),
     path('upload/', views.file_upload, name='file_upload'),
-    path('attachment_webhook', views.attachment_webhook, name='attachment_webhook')
+    path('attachment_webhook', views.attachment_webhook, name='attachment_webhook'),
+    path('start-new-chat/', views.start_new_chat, name='start_new_chat'),
+    path('set_language/', views.set_language, name='set_language')
 ]

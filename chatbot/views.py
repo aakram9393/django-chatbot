@@ -14,8 +14,17 @@ from chatbot.models import AttachmentStatus
 from django.contrib.auth import login,authenticate
 from .forms import SignUpForm 
 from django.contrib.auth.forms import AuthenticationForm
+import json
 
 # Create your views here.
+
+@require_http_methods(["POST"])
+@csrf_exempt
+def set_language(request):
+    data = json.loads(request.body)
+    language = data.get('language', 'en')  # Default to English if not specified
+    request.session['language'] = language
+    return JsonResponse({'status': 'success', 'message': f'Language set to {language}'})
 
 def update_file_status(status):
     user = User.objects.get(id=1)
@@ -24,8 +33,6 @@ def update_file_status(status):
     if user:
         # Update or create the attachment status associated with the user
         AttachmentStatus.objects.update_or_create(user=user, defaults={'status': status})
-
-    
 
 def signup(request):
     if request.method == 'POST':
@@ -46,6 +53,7 @@ def login_view(request):
             user = form.get_user()  # Retrieve the user object
             login(request, user)  # Perform the login operation
             username = user.username  # Access the username from the user objec
+            request.session["username"] = username
             request.session["id"] = retrieve_user_id(username)
             print(request.session["id"])
             return redirect('chat')  # Redirect to a home page or other
@@ -62,10 +70,18 @@ def retrieve_user_id(username):
     else:
         return response.status_code
 
-async def post_question(message, chat_id):
+@require_http_methods(["POST"])
+def start_new_chat(request):
+    user_id = retrieve_user_id(request.session.get("username"))
+    request.session["id"] = user_id
+    request.session["attachment_status"] = 'logged_in'
+    return JsonResponse({'status': 'success', 'message': 'Chat restarted with new user ID.'})
+
+async def post_question(message, chat_id, language):
     url = f'https://kong.zenith-dev-gateway.com/core-be/api/rag/chats/{chat_id}/questions'
     payload = {
-        'question': message
+        'question': message,
+        'language': language
     }
     async with httpx.AsyncClient() as client:
         response = requests.post(url, json=payload)
@@ -79,7 +95,10 @@ async def api_chat(request):
     user_input = request.GET.get('message')
     if user_input:
         session_id = await sync_to_async(request.session.__getitem__)("id")
-        answer = await post_question(user_input, session_id)
+        language = await sync_to_async(request.session.__getitem__)("language")
+        print("async language", language)
+        print(session_id)
+        answer = await post_question(user_input, session_id, language)
         print("API ANSWER :::::::: ", answer)
     bot_response = answer["answer"]
     return JsonResponse({'message': str(bot_response)})
@@ -88,7 +107,9 @@ async def api_chat(request):
 def chat(request):
     if request.session["attachment_status"] == 'processed':
         return render(request, 'chatbot/chat.html')
-    else:
+    elif request.session["attachment_status"] == 'logged_in':
+        return render(request, 'chatbot/nofile.html')
+    elif request.session["attachment_status"] == 'processing':
         return render(request, 'chatbot/processing.html')
     
 
@@ -135,7 +156,8 @@ def attachments(request):
     try:
         user = User.objects.get(id=user_id)
         attachment_status = AttachmentStatus.objects.get(user=user).status
-        request.session["attachment_status"] = attachment_status 
+        if request.session["attachment_status"] != 'logged_in':
+            request.session["attachment_status"] = attachment_status 
         print("inside attachments", attachment_status)
     except (User.DoesNotExist, AttachmentStatus.DoesNotExist):
         return HttpResponse("User or attachment status not found.", status=404)
@@ -199,12 +221,14 @@ def file_upload(request):
 
         # API endpoint URL
         url = f'https://kong.zenith-dev-gateway.com/core-be/api/rag/chats/{request.session.get("id")}/attachments'
+        print("url", url)
         
         if request.session.get("attachment_status") != "processing":
             try:
                     response = requests.post(url, json=payload)
                     if response.status_code == 201:
                         update_file_status('processing')
+                        request.session["attachment_status"] = 'processing'
                         return render(request, 'chatbot/processing.html')
                     else:
                         print(f"Failed to upload files. Status: {response.status_code}, Response: {response.text}")

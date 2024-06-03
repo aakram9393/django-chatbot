@@ -1,19 +1,39 @@
 // script.js
 function sendMessage() {
     var userInput = document.getElementById('userInput').value;
-    if (userInput.trim() === '') return; // Prevents sending empty messages
+    if (userInput.trim() === '') return;
 
-    fetch(`bot/?message=${userInput}`)
-        .then(response => response.json())
-        .then(data => {
-            var chatbox = document.getElementById('chatbox');
-            var userLine = `<li class="user"><img src="https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745" alt="User Avatar"><span>${userInput}</span></li>`;
-            var botLine = `<li class="bot"><img src="https://img.freepik.com/free-vector/cartoon-style-robot-vectorart_78370-4103.jpg?t=st=1716934235~exp=1716937835~hmac=e82dab0ee88c3673a7db0610806ccf972d86f82bd0faf481bf16bb5527a4ca03&w=996" alt="Bot Avatar"><span>${data.message}</span></li>`;
-            chatbox.innerHTML += userLine;
-            chatbox.innerHTML += botLine;
-            document.getElementById('userInput').value = ''; // clear input field after sending a message.
-            chatbox.scrollTop = chatbox.scrollHeight; // Scroll to the bottom of the chatbox
-        });    
+    var chatbox = document.getElementById('chatbox');
+    var userLine = `<li class="user"><img src="https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745" alt="User Avatar"><span>${userInput}</span></li>`;
+    chatbox.innerHTML += userLine;
+
+    var typingIndicator = `<li class="bot typing"><img src="https://img.freepik.com/free-vector/cartoon-style-robot-vectorart_78370-4103.jpg" alt="Bot Avatar"><span>typing...</span></li>`;
+    chatbox.innerHTML += typingIndicator;
+
+    fetch(`bot/?message=${encodeURIComponent(userInput)}`, {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json;charset=UTF-8'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        var typingElement = document.querySelector('.typing');
+        if (typingElement) {
+            typingElement.remove();
+        }
+        var botLine = `<li class="bot"><img src="https://img.freepik.com/free-vector/cartoon-style-robot-vectorart_78370-4103.jpg" alt="Bot Avatar"><span>${data.message}</span></li>`;
+        chatbox.innerHTML += botLine;
+        document.getElementById('userInput').value = '';
+        chatbox.scrollTop = chatbox.scrollHeight;
+    })
+    .catch(error => {
+        console.error('Failed to fetch response:', error);
+        var typingElement = document.querySelector('.typing');
+        if (typingElement) {
+            typingElement.remove();
+        }
+    });
 }
 
 document.getElementById('signin-form').addEventListener('submit', function(event) {

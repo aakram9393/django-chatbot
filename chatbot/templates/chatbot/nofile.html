@@ -1,0 +1,17 @@
+{% extends "chatbot/base.html" %}
+
+{% block title %}Chatbot{% endblock %}
+
+{% block content %}
+<section id="signin-section" style="padding: 20px;">
+    <h1>Welcome to Our Chatbot</h1>
+    <p>Please follow the procedure below to proceed with using the chatbot:</p>
+    <div style="background-color: #f8f9fa; border-left: 5px solid #007bff; padding: 20px; margin-top: 20px;">
+        <ol>
+            <li><strong>Upload PDF attachments:</strong> Begin by uploading the necessary PDF files in the <a href="/chatbot/attachments">Attachments Section</a>.</li>
+            <li><Strong>Wait for the files to be processed:</Strong> Please be patient as the system processes your files.</li>
+            <li><strong>Start conversation with the chatbot:</strong> Once processing is complete, you can begin your interaction with the chatbot.</li>
+        </ol>
+    </div>
+</section>
+{% endblock %}

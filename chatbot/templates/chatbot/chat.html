@@ -10,6 +10,46 @@
         <ul id="chatbox"></ul>
         <input type="text" id="userInput" placeholder="Say something..." autofocus>
         <button onclick="sendMessage()">Send</button>
+        <button id="startNewChat" onclick="startNewChat()">Start New Chat</button>
+        
+        <select id="languageSelect" onchange="changeLanguage()" style="padding: 5px; margin-top: 10px;">
+            <option value="en">English</option>
+            <option value="ar">Arabic</option>
+        </select>
     </div>
 </section>
+
+<script>
+function startNewChat() {
+    fetch("{% url 'start_new_chat' %}", {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ action: 'start_new_chat' })
+    }).then(response => response.json())
+      .then(data => {
+        console.log('New chat started:', data);
+        location.reload(); // Reload the page to reset the chat
+    }).catch(error => console.error('Error starting new chat:', error));
+}
+
+function changeLanguage() {
+    const language = document.getElementById('languageSelect').value;
+    fetch("{% url 'set_language' %}", {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ language: language })
+    }).then(response => {
+        if (response.ok) {
+            console.log('Language changed to:', language);
+            // location.reload(); // Optional: Reload the page to apply language settings
+        }
+    }).catch(error => console.error('Error changing language:', error));
+}
+</script>
 {% endblock %}
