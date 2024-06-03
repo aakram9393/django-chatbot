@@ -15,6 +15,7 @@ from django.contrib.auth import login,authenticate
 from .forms import SignUpForm 
 from django.contrib.auth.forms import AuthenticationForm
 import json
+from django.db import connection
 
 # Create your views here.
 
@@ -127,11 +128,13 @@ def attachment_webhook(request):
         return HttpResponse("User ID is required", status=400)
 
     # Attempt to fetch the user with the given ID, or create a new one if not found
-    user, created = User.objects.get_or_create(id=user_id, defaults={
-        'username': f'user_{user_id}',
-        'email': f'user_{user_id}@example.com'
-    })
-
+    try:
+        user, created = User.objects.get_or_create(id=user_id, defaults={
+            'username': f'user_{user_id}',
+            'email': f'user_{user_id}@example.com'
+        })
+    finally:
+        connection.close()
     # If the user was created, set a default password and other necessary fields
     if created:
         user.set_password("defaultpassword")  # Set a default or generated password
@@ -139,8 +142,11 @@ def attachment_webhook(request):
         login(request, user)
 
     # Update or create the attachment status associated with the user
-    AttachmentStatus.objects.update_or_create(user=user, defaults={'status': 'processed' if file_status == 'processed' else 'processing'})
-
+    try:
+        AttachmentStatus.objects.update_or_create(user=user, defaults={'status': 'processed' if file_status == 'processed' else 'processing'})
+    finally:
+        # Ensure the connection is closed after updating/creating
+        connection.close()
     # Render the appropriate template based on the file status
     if file_status == 'processed':
         print(file_status)
