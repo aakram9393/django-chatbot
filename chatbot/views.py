@@ -16,6 +16,8 @@ from .forms import SignUpForm
 from django.contrib.auth.forms import AuthenticationForm
 import json
 from django.db import connection
+from .models import Message
+from django.db import close_old_connections
 
 # Create your views here.
 
@@ -84,6 +86,8 @@ async def post_question(message, chat_id, language):
         'question': message,
         'language': language
     }
+    print("post question payload", payload)
+    print("post question url", url)
     async with httpx.AsyncClient() as client:
         response = requests.post(url, json=payload)
         print("api-response",response)
@@ -91,6 +95,16 @@ async def post_question(message, chat_id, language):
             return response.json()
         else:
             return response.status_code
+        
+def get_chat_history(request):
+    session_id = request.session.session_key
+    try:
+        user_messages = Message.objects.filter(session_id=session_id).order_by('created_at')
+    finally:
+        connection.close()    
+    history = [{'text': msg.text, 'is_bot': msg.is_bot} for msg in user_messages]
+    print(history)
+    return JsonResponse(history, safe=False)     
 
 async def api_chat(request):
     user_input = request.GET.get('message')
@@ -99,10 +113,31 @@ async def api_chat(request):
         language = await sync_to_async(request.session.__getitem__)("language")
         print("async language", language)
         print(session_id)
+
+        session__id = request.session.session_key  # Ensure the session key is available
+        if not session__id:
+            await sync_to_async(request.session.save)()
+            session__id = request.session.session_key
+       
+        # Log the user's message
+        try:
+            await sync_to_async(Message.objects.create)(text=user_input, is_bot=False, session_id=session__id)
+        finally:
+            await sync_to_async(close_old_connections)()
+
         answer = await post_question(user_input, session_id, language)
         print("API ANSWER :::::::: ", answer)
-    bot_response = answer["answer"]
+        bot_response = answer["answer"]
+
+        # Log the bot's response
+        try:
+            await sync_to_async(Message.objects.create)(text=bot_response, is_bot=True, session_id=session__id)
+        finally:
+            await sync_to_async(close_old_connections)()
+
     return JsonResponse({'message': str(bot_response)})
+
+
 
 # @login_required(login_url='signin/')
 def chat(request):
@@ -175,6 +210,19 @@ def attachments(request):
         return render(request, 'chatbot/attachment.html')
     else:
         return render(request, 'chatbot/attachment.html')
+
+def attachment_list(request):
+    # Example call to an external API to get files; adjust as necessary.
+    response = requests.get(f'https://kong.zenith-dev-gateway.com/core-be/api/rag/chats/{request.session.get("id")}/attachments')
+    print("url", f'https://kong.zenith-dev-gateway.com/core-be/api/rag/chats/{request.session.get("id")}/attachments')
+    print("response", response.json())
+
+    if response.status_code == 200:
+        files = response.json()  # Assuming the API returns a JSON list of files
+        if files[0]['fileName']:
+            request.session["attachment_status"] = "processed"
+        print("called")
+        return JsonResponse({'files': files})  
 
 def signin(request):
     return render(request, 'chatbot/signin.html')

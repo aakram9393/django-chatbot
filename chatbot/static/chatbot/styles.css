@@ -104,7 +104,7 @@ button:hover {
 }
 
 aside {
-    width: 300px;
+    width: 600px;
     border: 1px solid #ccc;
     border-radius: 8px;
     padding: 10px;
@@ -296,4 +296,36 @@ nav ul li a:hover, nav ul li a:focus {
 
 .logout-form {
     margin: 0; /* Removes margin for the form if any */
+}
+.files-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+#file-list {
+    list-style-type: none; /* Removes default list styling */
+    padding: 0; /* Removes padding */
+    margin: 20px 0; /* Adds some margin around the list */
+}
+
+#file-list li {
+    background-color: #f9f9f9; /* Light grey background */
+    border: 1px solid #ddd; /* Grey border */
+    padding: 10px; /* Padding inside each list item */
+    margin-bottom: 10px; /* Space between items */
+    border-radius: 5px; /* Rounded corners for each item */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Subtle shadow for 3D effect */
+    transition: transform 0.2s; /* Smooth transform on hover */
+}
+
+#file-list li a {
+    text-decoration: none; /* No underline */
+    color: #333; /* Dark grey text color */
+    display: block; /* Makes the link fill the entire list item */
+}
+
+#file-list li:hover {
+    transform: translateY(-3px); /* Lifts the item on hover */
+    background-color: #f0f0f0; /* Slightly darker background on hover */
 }

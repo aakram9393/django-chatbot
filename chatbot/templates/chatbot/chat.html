@@ -20,6 +20,26 @@
 </section>
 
 <script>
+
+window.onload = function() {
+    fetch("{% url 'get_chat_history' %}", {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json;charset=UTF-8'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const chatbox = document.getElementById('chatbox');
+        data.forEach(msg => {
+            const line = `<li class="${msg.is_bot ? 'bot' : 'user'}"><img src="${msg.is_bot ? 'https://img.freepik.com/free-vector/cartoon-style-robot-vectorart_78370-4103.jpg' : 'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745'}" alt="${msg.is_bot ? 'Bot Avatar' : 'User Avatar'}"><span>${msg.text}</span></li>`;
+            chatbox.innerHTML += line;
+        });
+        chatbox.scrollTop = chatbox.scrollHeight;
+    })
+    .catch(error => console.error('Failed to fetch history:', error));
+};
+
 function startNewChat() {
     fetch("{% url 'start_new_chat' %}", {
         method: 'POST',

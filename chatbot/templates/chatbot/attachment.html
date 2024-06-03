@@ -3,10 +3,18 @@
 {% block title %}Chatbot{% endblock %}
 
 {% block ads %}
+<aside id="ad-section">
+    <div class="container files-container mt-5">
+        <h2>Uploaded Files</h2>
+        <ul id="file-list">
+            <!-- Files will be dynamically loaded here -->
+        </ul>
+    </div>
+</aside>
 {% endblock ads %}
 
 {% block content %}
-<section id="signin-section">
+<aside id="ad-section">
 <div class="container mt-5">
     <h2>Upload Files</h2>
     <form action="{% url 'file_upload' %}" method="post" enctype="multipart/form-data" class="pt-3">
@@ -22,13 +30,48 @@
         </div>
     </form>
 </div>
-</section>
+</aside>
 
 <script>
 document.querySelector('.custom-file-input').addEventListener('change', function(e) {
     let fileName = document.getElementById("customFile").files.length + " files selected";
     let nextSibling = e.target.nextElementSibling;
     nextesibling.innerText = fileName;
+});
+
+function loadFiles() {
+    fetch("{% url 'attachment_list' %}")  // Ensure this URL is correctly resolved
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok: ' + response.statusText);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log("Received files:", data.files);
+
+        const fileList = document.getElementById('file-list');
+        fileList.innerHTML = ''; // Clear current list
+
+        // Iterate over each file received and build the list
+        data.files.forEach(file => {
+            const li = document.createElement('li');
+            const a = document.createElement('a');
+            a.href = file.filePath;
+            a.target = '_blank'; // Opens the file in a new tab when clicked
+            a.textContent = `${file.fileName}`;
+            li.appendChild(a);
+            fileList.appendChild(li);
+        });
+    })
+    .catch(error => {
+        console.error('Error loading the files:', error);
+    });
+}
+
+// Call loadFiles on page load and on certain events
+window.addEventListener('DOMContentLoaded', (event) => {
+    loadFiles();  // Load files when the page is fully loaded
 });
 </script>
 {% endblock %}
