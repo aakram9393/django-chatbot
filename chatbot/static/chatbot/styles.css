@@ -103,11 +103,19 @@ button:hover {
     background-color: #45a045;
 }
 
-aside {
+/* aside {
     width: 600px;
     border: 1px solid #ccc;
     border-radius: 8px;
     padding: 10px;
+    background: #f4f4f4;
+} */
+
+aside {
+    width: 50%; /* Width is 50% of the parent container */
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 1em; /* Padding is now relative to the font size */
     background: #f4f4f4;
 }
 

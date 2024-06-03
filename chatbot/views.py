@@ -18,6 +18,8 @@ import json
 from django.db import connection
 from .models import Message
 from django.db import close_old_connections
+import aiohttp
+import asyncio
 
 # Create your views here.
 
@@ -30,12 +32,15 @@ def set_language(request):
     return JsonResponse({'status': 'success', 'message': f'Language set to {language}'})
 
 def update_file_status(status):
-    user = User.objects.get(id=1)
+    try:
+        user = User.objects.get(id=1)
 
-    # If the user was created, set a default password and other necessary fields
-    if user:
-        # Update or create the attachment status associated with the user
-        AttachmentStatus.objects.update_or_create(user=user, defaults={'status': status})
+        # If the user was created, set a default password and other necessary fields
+        if user:
+            # Update or create the attachment status associated with the user
+            AttachmentStatus.objects.update_or_create(user=user, defaults={'status': status})
+    finally:
+        connection.close()        
 
 def signup(request):
     if request.method == 'POST':
@@ -197,6 +202,7 @@ def attachments(request):
     try:
         user = User.objects.get(id=user_id)
         attachment_status = AttachmentStatus.objects.get(user=user).status
+        print("attachment_status", attachment_status)
         if request.session["attachment_status"] != 'logged_in':
             request.session["attachment_status"] = attachment_status 
         print("inside attachments", attachment_status)
@@ -219,8 +225,11 @@ def attachment_list(request):
 
     if response.status_code == 200:
         files = response.json()  # Assuming the API returns a JSON list of files
-        if files[0]['fileName']:
-            request.session["attachment_status"] = "processed"
+        # try:
+        #     if files[0]['fileName']:
+        #         request.session["attachment_status"] = "logged_in"
+        # except:
+        #     request.session["attachment_status"] = "logged_in"       
         print("called")
         return JsonResponse({'files': files})  
 
@@ -247,7 +256,7 @@ def submit(request):
         return JsonResponse({'status': 'error', 'message': 'no username provided'})
     
 
-def file_upload(request):
+async def file_upload(request):
     if request.method == 'POST':
         files = request.FILES.getlist('files')
         attachments = []
@@ -255,8 +264,8 @@ def file_upload(request):
         # Process files and build payload
         for f in files:
             try:
-                # Read file content asynchronously
-                file_content = f.read()
+                # Read file content asynchronously using sync_to_async
+                file_content = await sync_to_async(f.read)()
                 # Encode the content to base64
                 b64_content = base64.b64encode(file_content)
                 b64_string = b64_content.decode('utf-8')
@@ -269,27 +278,30 @@ def file_upload(request):
                 print(f"Error processing file {f.name}: {str(e)}")
                 return JsonResponse({'status': 'error', 'message': f'Failed to process file {f.name}.'})
 
-        # Construct the request body
-        payload = attachments
-        print("payload", payload)
-
         # API endpoint URL
-        url = f'https://kong.zenith-dev-gateway.com/core-be/api/rag/chats/{request.session.get("id")}/attachments'
-        print("url", url)
+        session_id = await sync_to_async(request.session.get)("id")
+        url = f'https://kong.zenith-dev-gateway.com/core-be/api/rag/chats/{session_id}/attachments'
         
-        if request.session.get("attachment_status") != "processing":
-            try:
-                    response = requests.post(url, json=payload)
-                    if response.status_code == 201:
-                        update_file_status('processing')
-                        request.session["attachment_status"] = 'processing'
-                        return render(request, 'chatbot/processing.html')
-                    else:
-                        print(f"Failed to upload files. Status: {response.status_code}, Response: {response.text}")
-                        return JsonResponse({'status': 'error', 'message': f'Failed to upload files. Server responded with status {response.status_code}.'})
-            except:
-                print(f"HTTP request failed")
-                return JsonResponse({'status': 'error', 'message': 'HTTP request failed.'})
+        # Check attachment status asynchronously
+        attachment_status = await sync_to_async(request.session.get)("attachment_status")
+        if attachment_status != "processing":
+            async with aiohttp.ClientSession() as session:
+                try:
+                    async with session.post(url, json=attachments) as response:
+                        if response.status == 201:
+                            # Update session state asynchronously
+                            await sync_to_async(request.session.__setitem__)("attachment_status", "processing")
+                            # Ensure that Django session modifications are saved
+                            await sync_to_async(request.session.save)()
+                            await sync_to_async(update_file_status)("processing")
+                            return render(request, 'chatbot/processing.html')
+                        else:
+                            text = await response.text()
+                            print(f"Failed to upload files. Status: {response.status}, Response: {text}")
+                            return JsonResponse({'status': 'error', 'message': f'Failed to upload files. Server responded with status {response.status}.'})
+                except Exception as e:
+                    print(f"HTTP request failed: {str(e)}")
+                    return JsonResponse({'status': 'error', 'interface': 'HTTP request failed.'})
 
     return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
 

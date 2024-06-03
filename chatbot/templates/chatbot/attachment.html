@@ -7,7 +7,6 @@
     <div class="container files-container mt-5">
         <h2>Uploaded Files</h2>
         <ul id="file-list">
-            <!-- Files will be dynamically loaded here -->
         </ul>
     </div>
 </aside>
@@ -53,19 +52,28 @@ function loadFiles() {
         const fileList = document.getElementById('file-list');
         fileList.innerHTML = ''; // Clear current list
 
-        // Iterate over each file received and build the list
-        data.files.forEach(file => {
-            const li = document.createElement('li');
-            const a = document.createElement('a');
-            a.href = file.filePath;
-            a.target = '_blank'; // Opens the file in a new tab when clicked
-            a.textContent = `${file.fileName}`;
-            li.appendChild(a);
-            fileList.appendChild(li);
-        });
+        if (data.files.length === 0) {
+            // Display a message if there are no files
+            const p = document.createElement('p');
+            p.textContent = "You currently have 0 files uploaded.";
+            fileList.appendChild(p);
+        } else {
+            // Iterate over each file received and build the list
+            data.files.forEach(file => {
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.href = file.filePath;
+                a.target = '_blank'; // Opens the file in a new tab when clicked
+                a.textContent = file.fileName;
+                li.appendChild(a);
+                fileList.appendChild(li);
+            });
+        }
     })
     .catch(error => {
         console.error('Error loading the files:', error);
+        // Optionally display an error message in the UI
+        fileList.innerHTML = '<p>Error loading files. Please try again later.</p>';
     });
 }
 
