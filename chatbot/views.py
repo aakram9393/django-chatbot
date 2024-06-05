@@ -225,11 +225,11 @@ def attachment_list(request):
 
     if response.status_code == 200:
         files = response.json()  # Assuming the API returns a JSON list of files
-        # try:
-        #     if files[0]['fileName']:
-        #         request.session["attachment_status"] = "logged_in"
-        # except:
-        #     request.session["attachment_status"] = "logged_in"       
+        try:
+            if not files[0]['fileName']:
+                request.session["attachment_status"] = "logged_in"
+        except:
+            request.session["attachment_status"] = "logged_in"       
         print("called")
         return JsonResponse({'files': files})  
 
@@ -304,4 +304,13 @@ async def file_upload(request):
                     return JsonResponse({'status': 'error', 'interface': 'HTTP request failed.'})
 
     return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
+
+
+def delete_file(request):
+    response = requests.delete(f'https://kong.zenith-dev-gateway.com/core-be/api/rag/attachments/{request.GET.get("file_id")}')
+
+    if response.status_code == 204:
+        return JsonResponse({'status': 'file deleted'})
+    else:
+        return JsonResponse({'status': 'error'})
 

@@ -67,7 +67,16 @@ function loadFiles() {
                 a.textContent = file.fileName;
                 li.appendChild(a);
                 fileList.appendChild(li);
+
+                // Create a delete button
+                const button = document.createElement('button');
+                button.textContent = 'Delete';
+                button.className = 'btn btn-danger ml-2'; // Add Bootstrap classes for styling
+                button.onclick = () => deleteFile(file.id); // Assuming each file has a unique 'id'
+                li.appendChild(button);
             });
+
+            
         }
     })
     .catch(error => {
@@ -81,5 +90,25 @@ function loadFiles() {
 window.addEventListener('DOMContentLoaded', (event) => {
     loadFiles();  // Load files when the page is fully loaded
 });
+
+function deleteFile(fileId) {
+    fetch(`{% url 'delete_file' %}?file_id=${fileId}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to delete the file');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('File deleted:', data);
+        loadFiles(); // Reload the file list after deletion
+    })
+    .catch(error => console.error('Error deleting file:', error));
+}
 </script>
 {% endblock %}

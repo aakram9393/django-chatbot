@@ -17,6 +17,7 @@ urlpatterns = [
     path('start-new-chat/', views.start_new_chat, name='start_new_chat'),
     path('set_language/', views.set_language, name='set_language'),
     path('get_chat_history/', views.get_chat_history, name='get_chat_history'),
-    path('attachment_list/', views.attachment_list, name='attachment_list')
+    path('attachment_list/', views.attachment_list, name='attachment_list'),
+    path('delete_file/', views.delete_file, name='delete_file')
     
 ]
