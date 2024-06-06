@@ -48,7 +48,7 @@ def signup(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('chat') 
+            return redirect('login_view') 
     else:
         form = SignUpForm()
     return render(request, 'chatbot/signup.html', {'form': form})
